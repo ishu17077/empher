@@ -8,11 +8,13 @@ class Post {
   List<String>? photoUrls;
   String postByUid;
   DateTime postTime;
+  String? location;
   bool isAnonymous;
 
   Post({
     required this.title,
     this.photoUrls,
+    this.location,
     required this.postByUid,
     DateTime? postTime,
     this.description,
@@ -23,6 +25,7 @@ class Post {
         'title': title,
         'description': description,
         'photo_urls': photoUrls,
+        'location': location,
         'post_by_uid': postByUid,
         'post_time': Timestamp.fromDate(postTime),
         'is_anonymous': isAnonymous,
@@ -32,10 +35,11 @@ class Post {
     Post post = Post(
       title: postMap['title'],
       postByUid: postMap['post_by_uid'],
+      location: postMap['location'],
       isAnonymous: postMap['is_anonymous'] ?? false,
       description: postMap['description'],
       photoUrls: ((postMap['photo_urls'] ?? []) as List).cast<String>(),
-      postTime: postMap['post_time'],
+      postTime: postMap['post_time'] != null? (postMap['post_time'] as Timestamp).toDate(): null,
     );
     return post;
   }
