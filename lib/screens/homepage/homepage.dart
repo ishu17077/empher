@@ -1,5 +1,4 @@
 import 'package:empher/constants/colors.dart';
-import 'package:empher/constants/widgets.dart';
 import 'package:empher/functions/firebase_calls.dart';
 import 'package:empher/models/post.dart';
 import 'package:empher/screens/homepage/widgets/custom_circular_progress_indicator.dart';
@@ -37,15 +36,14 @@ class _HomepageState extends State<Homepage> {
           future: postsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                  child: CustomCircularProgressIndicator(
-                      radius: 2, colors: [Colors.blue]));
+              customThreatFinder.threatDetectorLoading(context);
+              return SizedBox();
             } else if (snapshot.hasError) {
               return Center(
                   child: Text("Error loading data, please try again later."));
             }
 
-            customThreatFinder.threatDetectorLoading(context);
+            customThreatFinder.removeThreadDetectorLoading();
             // return Center(
             //     child: CustomCircularProgressIndicator(
             //         radius: 300, colors: [Colors.red]));

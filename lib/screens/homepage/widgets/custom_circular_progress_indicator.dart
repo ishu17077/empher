@@ -14,7 +14,7 @@ class CustomArc extends CustomPainter {
     final rect = Rect.fromLTRB(0, 0, this.size, this.size);
     final startAngle = math.pi * rad;
     final sweepAngle = math.pi / 3;
-    final useCenter = false;
+    final useCenter = true;
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
@@ -42,10 +42,12 @@ class CustomCircularProgressIndicator extends StatefulWidget {
 
 class _CustomCircularProgressIndicatorState
     extends State<CustomCircularProgressIndicator>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _animation;
-  final List<double> customPositionValues = [
+    with TickerProviderStateMixin {
+  late AnimationController _animationCircleController;
+  late Animation<double> _animationCircle;
+  late Animation<double> _animationShield;
+  late AnimationController _animationShieldController;
+  late List<double> customPositionValues = [
     1.0,
     1.5,
     2.0,
@@ -59,58 +61,80 @@ class _CustomCircularProgressIndicatorState
 
   @override
   void initState() {
-    _animationController = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 6000));
-    _animationController.repeat(reverse: true);
-    _animation = Tween(begin: 0.0, end: 2 * math.pi)
-        .animate(_animationController)
+    _animationCircleController = AnimationController(
+        vsync: this, duration: Duration(milliseconds: 40000));
+    _animationCircleController.repeat(reverse: false);
+    _animationCircle = Tween(begin: 1.0, end: 10 * math.pi)
+        .animate(_animationCircleController)
       ..addListener(() => setState(
-          () {})); // .. just calls animate without considering ints return type
+          () {})); // .. just calls animate without considering its return type
+
+    _animationShieldController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 600));
+    _animationShieldController.repeat(reverse: true);
+    _animationShield = Tween(begin: 1.0, end: 2.0).animate(CurvedAnimation(
+        parent: _animationShieldController, curve: Curves.easeIn))
+      ..addListener(() => setState(() {}));
     super.initState();
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _animationCircleController.dispose();
+    _animationShieldController.dispose();
 
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-        children: widget.colors.mapIndexed(
-      (index, color) {
-        return CustomPaint(
-          size: Size(
-            widget.radius,
-            widget.radius,
-          ),
-          painter: CustomArc(
-              color: color,
-              rad: customPositionValues[index] + _animation.value,
-              size: widget.radius),
-        );
-      },
-    ).toList());
+    return Stack(alignment: AlignmentDirectional.center, children: [
+      ...widget.colors.mapIndexed(
+        (index, color) {
+          return CustomPaint(
+            size: Size(
+              widget.radius,
+              widget.radius,
+            ),
+            painter: CustomArc(
+                color: color,
+                rad: customPositionValues[index] + _animationCircle.value,
+                size: widget.radius),
+          );
+        },
+      ),
+      ScaleTransition(
+        scale: _animationShield,
+        child: Icon(
+          Icons.shield_rounded,
+          color: Colors.white,
+        ),
+      )
+    ]);
   }
 }
 
 class CustomThreatFinder {
   bool _isCalled = false;
+  late OverlayEntry overlayEntry = OverlayEntry(builder: (context) {
+    // WidgetsBinding.instance.addPostFrameCallback((_) =>
+    _isCalled = true;
+    return Center(
+        child: CustomCircularProgressIndicator(radius: 300, colors: [
+      Colors.red.withValues(alpha: 0.7),
+    ])
+        // )
+        );
+  });
   void threatDetectorLoading(BuildContext context) {
     !_isCalled
-        ? WidgetsBinding.instance.addPostFrameCallback((_) =>
-            Overlay.of(context).insert(OverlayEntry(builder: (context) {
-              // WidgetsBinding.instance.addPostFrameCallback((_) =>
-              _isCalled = true;
-              return Center(
-                  child: CustomCircularProgressIndicator(radius: 300, colors: [
-                Colors.red.withValues(alpha: 0.7),
-              ])
-                  // )
-                  );
-            })))
+        ? WidgetsBinding.instance.addPostFrameCallback(
+            (_) => Overlay.of(context).insert(overlayEntry))
         : null;
+  }
+
+  void removeThreadDetectorLoading() {
+    overlayEntry.remove();
+    overlayEntry.dispose();
   }
 }
