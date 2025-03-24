@@ -134,7 +134,9 @@ class CustomThreatFinder {
   }
 
   void removeThreadDetectorLoading() {
-    overlayEntry.remove();
-    overlayEntry.dispose();
+    if (overlayEntry.mounted == true) {
+      overlayEntry.remove();
+      overlayEntry.dispose();
+    }
   }
 }

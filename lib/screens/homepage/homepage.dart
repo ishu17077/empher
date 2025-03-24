@@ -2,7 +2,6 @@ import 'package:empher/constants/colors.dart';
 import 'package:empher/functions/firebase_calls.dart';
 import 'package:empher/models/post.dart';
 import 'package:empher/screens/homepage/widgets/custom_circular_progress_indicator.dart';
-
 import 'package:empher/screens/homepage/widgets/post_tile.dart';
 import 'package:flutter/material.dart';
 // import 'package:rive/rive.dart';
@@ -16,21 +15,37 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   final CustomThreatFinder customThreatFinder = CustomThreatFinder();
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    postsFuture.then((value) {
+      if (value.docs.isNotEmpty) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: kBackgroundColor,
-        scrolledUnderElevation: 0.0,
-        title: Text("Emper",
-            style: TextStyle(
-              color: Colors.white,
-              fontFamily: "Cedarville Cursive",
-              fontSize: 27,
-              fontWeight: FontWeight.bold,
-            )),
-      ),
+      appBar: !_isLoading
+          ? AppBar(
+              backgroundColor: kBackgroundColor,
+              scrolledUnderElevation: 0.0,
+              title: Text("Empher",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: "Cedarville Cursive",
+                    fontSize: 27,
+                    fontWeight: FontWeight.bold,
+                  )),
+            )
+          : null,
       body: SafeArea(
         child: FutureBuilder(
           future: postsFuture,
@@ -67,16 +82,18 @@ class _HomepageState extends State<Homepage> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: const Color.fromARGB(255, 243, 102, 102),
-        child: Icon(Icons.post_add, color: Colors.white),
+      floatingActionButton: !_isLoading
+          ? FloatingActionButton(
+              onPressed: () {},
+              backgroundColor: kButtonColor,
+              child: Icon(Icons.post_add, color: Colors.white),
 
-        // RiveAnimation.asset( //? Future implementation
-        //   'assets/icons.riv',
-        //   artboard: 'CHAT',
-        // )
-      ),
+              // RiveAnimation.asset( //? Future implementation
+              //   'assets/icons.riv',
+              //   artboard: 'CHAT',
+              // )
+            )
+          : SizedBox(),
     );
   }
 }
