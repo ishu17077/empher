@@ -19,7 +19,7 @@ class _HomepageState extends State<Homepage> {
 
   @override
   void initState() {
-    postsFuture.then((value) {
+    Future.delayed(Duration(seconds: 3), () => postsFuture).then((value) {
       if (value.docs.isNotEmpty) {
         setState(() {
           _isLoading = false;
@@ -48,7 +48,7 @@ class _HomepageState extends State<Homepage> {
           : null,
       body: SafeArea(
         child: FutureBuilder(
-          future: postsFuture,
+          future: Future.delayed(Duration(seconds: 3), () => postsFuture),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               customThreatFinder.threatDetectorLoading(context);
@@ -65,20 +65,28 @@ class _HomepageState extends State<Homepage> {
             var docs = snapshot.data!.docs;
             List<Post> posts =
                 docs.map((doc) => Post.fromJson(doc.data())).toList();
-            return ListView.builder(
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    PostTile(post: posts[index]),
-                    Divider(
-                      color: const Color.fromARGB(255, 228, 102, 102),
-                      thickness: 1,
-                    ),
-                  ],
-                );
-              },
-              itemCount: docs.length,
-            );
+            return Column(children: [
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        PostTile(post: posts[index]),
+                        Divider(
+                          color: const Color.fromARGB(255, 228, 102, 102),
+                          thickness: 1,
+                        ),
+                        index + 1 == docs.length
+                            ? SizedBox(height: 50)
+                            : SizedBox(),
+                      ],
+                    );
+                  },
+                  itemCount: docs.length,
+                ),
+              ),
+            ]);
           },
         ),
       ),

@@ -25,7 +25,7 @@ class Post {
   // String get id => _id; //? Future implementation
   String title;
   String? description;
-  List<String>? photoUrls;
+  String? photoUrl;
   String postByUid;
   AIFactCheck? aiFactCheck;
 
@@ -36,7 +36,7 @@ class Post {
 
   Post({
     required this.title,
-    this.photoUrls,
+    this.photoUrl,
     this.location,
     this.aiFactCheck,
     this.aiSummary,
@@ -49,7 +49,7 @@ class Post {
   toJson() => {
         'title': title,
         'description': description,
-        'photo_urls': photoUrls,
+        'photo_url': photoUrl,
         'location': location,
         'post_by_uid': postByUid,
         'post_time': Timestamp.fromDate(postTime),
@@ -65,7 +65,7 @@ class Post {
       aiSummary: postMap['ai_summary'],
       isAnonymous: postMap['is_anonymous'] ?? false,
       description: postMap['description'],
-      photoUrls: ((postMap['photo_urls'] ?? []) as List).cast<String>(),
+      photoUrl: postMap['photo_url'],
       postTime: postMap['post_time'] != null
           ? (postMap['post_time'] as Timestamp).toDate()
           : null,

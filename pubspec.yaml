@@ -47,6 +47,7 @@ dependencies:
   rive: ^0.13.20
   intl: ^0.20.2
   collection: ^1.19.1
+  share_plus: ^10.1.4
 
 dev_dependencies:
   flutter_test:

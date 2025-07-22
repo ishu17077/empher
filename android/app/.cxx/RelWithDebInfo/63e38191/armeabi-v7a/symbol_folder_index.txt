@@ -1,0 +1,1 @@
+/home/ishukumar5663/AndroidStudioProjects/empher/build/app/intermediates/cxx/RelWithDebInfo/63e38191/obj/armeabi-v7a

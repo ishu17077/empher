@@ -3,6 +3,7 @@ import 'package:empher/models/post.dart';
 import 'package:empher/screens/homepage/widgets/post_buttons.dart';
 import 'package:empher/screens/homepage/widgets/post_verification_pill.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 class PostTile extends StatelessWidget {
   final Post post;
@@ -26,7 +27,8 @@ class PostTile extends StatelessWidget {
               CircleAvatar(
                 maxRadius: 20,
                 minRadius: 20,
-                backgroundImage: AssetImage("assets/images/homer.png"),
+                backgroundImage: NetworkImage(post.photoUrl ??
+                    'https://photosnow.org/wp-content/uploads/2024/04/indian-girl-photo_5.jpg'),
               ),
               SizedBox(width: 10),
               Column(
@@ -35,7 +37,7 @@ class PostTile extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text("Homer Girl",
+                      Text(post.postByUid,
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold)),
@@ -128,7 +130,9 @@ class PostTile extends StatelessWidget {
                 ),
                 SizedBox(width: 10),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Share.share("Jodpdd", subject: "LDodod");
+                  },
                   icon: Row(
                     children: [
                       Icon(Icons.share,
